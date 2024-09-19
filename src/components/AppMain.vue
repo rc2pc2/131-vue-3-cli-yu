@@ -1,5 +1,6 @@
 <script>
     import MainCardsList from './MainCardsList.vue';
+    import MainLoader from './MainLoader.vue';
 // cosa mi serve per realizzare una chiamata api:
 // 1:  importare axios
 import axios from "axios";
@@ -8,7 +9,8 @@ import axios from "axios";
 
 export default {
     components:{
-        MainCardsList
+        MainCardsList,
+        MainLoader
     }, 
     data() {
         return {
@@ -17,6 +19,7 @@ export default {
             // creo un nuovo dato reattivo, che sia una stringa contentente l'indirizzo dell'api 
             apiUrl: "https://db.ygoprodeck.com/api/v7/cardinfo.php",
             // TODO => inserire sintassi params con axios
+            loading: true,
         }
     },
     methods: {
@@ -41,14 +44,15 @@ export default {
                 .catch(function (error) {
                     console.log(error);
                 })
-                .finally(function () {
+                .finally(() => {
+                    this.loading = false;
                     console.log("Chiamata API terminata 💪");
                 });
         }
     },
     // 🧙🏻‍♂️ invochiamo il metodo costruito dall'interno di un lifecycle hook
     created(){
-        this.getCardsList();
+        setTimeout(this.getCardsList, 2000);
     }
 }
 </script>
@@ -57,10 +61,11 @@ export default {
     <h2>
         AppMain
     </h2>
+    <MainLoader v-if="loading" />
     <!-- 1 : Le diamo il nome che vogliamo all'interno del self-closing tag del componente a cui vogliamo mandare la prop -->
      <!-- 2 : inseriamo il valore nella definizione della prop :nomeProp="valore" -->
       <!-- 3 : andiamo a definire le props all'interno del componente che sta per riceverle, tipizzandolo e usandolo a nostro piacimento -->
-    <MainCardsList :cards="cardsList" />
+    <MainCardsList v-else :cards="cardsList" />
 </template>
 
 <style scoped>
