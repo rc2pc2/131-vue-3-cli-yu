@@ -1,6 +1,7 @@
 <script>
     import MainCardsList from './MainCardsList.vue';
     import MainLoader from './MainLoader.vue';
+    import MainSearch from './MainSearch.vue';
 // cosa mi serve per realizzare una chiamata api:
 // 1:  importare axios
 import axios from "axios";
@@ -10,7 +11,8 @@ import axios from "axios";
 export default {
     components:{
         MainCardsList,
-        MainLoader
+        MainLoader,
+        MainSearch
     }, 
     data() {
         return {
@@ -24,14 +26,16 @@ export default {
     },
     methods: {
         // creo un nuovo metodo in methods
-        getCardsList(){
+        getCardsList( archetypeFilter = null){
             console.log("Chiamata API iniziata 👍");
             // effettua una chiamata GET all'indirizzo interessato della nostra API
             // axios.get(this.apiUrl)
-            axios.get(this.apiUrl, {
+            // `${this.apiUrl}?num=35&offset=0&archetype=${archetypeFilter}`
+            axios.get(this.apiUrl , { // ${}
                 params: {
                     num: 35,
                     offset: 0,
+                    archetype: archetypeFilter
                 }
             })
             // nel then della nostra chiamata axios (dovra' essere una arrow function)
@@ -48,11 +52,15 @@ export default {
                     this.loading = false;
                     console.log("Chiamata API terminata 💪");
                 });
+        },
+        updateCardsList(information){
+            console.log(`😶‍🌫️ E' arrivato ad AppMain l'evento archetype-search con payload: ${information} 😶‍🌫️`);
+            this.getCardsList(information);
         }
     },
     // 🧙🏻‍♂️ invochiamo il metodo costruito dall'interno di un lifecycle hook
     created(){
-        setTimeout(this.getCardsList, 2000);
+        setTimeout(this.getCardsList, 200);
     }
 }
 </script>
@@ -61,6 +69,11 @@ export default {
     <h2>
         AppMain
     </h2>
+
+    <!-- 1 : definiamo il custom event all'interno del self-closing tag del componente istanziato -->
+     <!-- 2 : collego  il mio nuovo evento custom con un mio metodo -->
+      <!-- 3 : definisco l'evento custom e come viene attivato nel componente figlio -->
+    <MainSearch @archetype-search="updateCardsList"/>
     <MainLoader v-if="loading" />
     <!-- 1 : Le diamo il nome che vogliamo all'interno del self-closing tag del componente a cui vogliamo mandare la prop -->
      <!-- 2 : inseriamo il valore nella definizione della prop :nomeProp="valore" -->
